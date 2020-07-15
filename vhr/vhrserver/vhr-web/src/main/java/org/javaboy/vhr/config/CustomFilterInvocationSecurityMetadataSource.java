@@ -23,15 +23,26 @@ import java.util.List;
  * @网站 http://www.javaboy.org
  * @时间 2019-09-29 7:37
  *
- * 这个类的作用，主要是根据用户传来的请求地址，分析出请求需要的角色
+ * 这个类的作用动态的权限验证：主要是根据用户传来的请求地址，分析出请求需要的角色
+ * 实现Spring Security的决策管理器AccessDecisionManager
+ * spring security的认证和权限流程：如果一个用户已登录，那么访问受保护的资源，
+ * 则会校验该用户是否有权限访问。如果没有权限，则会调用权限拒绝的处理器进行处理。如果有权限，则能顺利访问该资源；
  */
 @Component
 public class CustomFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
     @Autowired
     MenuService menuService;
     AntPathMatcher antPathMatcher = new AntPathMatcher();
+
+    /**
+     * 判定用户请求的url 是否在权限表中，如果在权限表中，则返回给 decide 方法，用来判定用户是否有此权限
+     * @param object
+     * @return
+     * @throws IllegalArgumentException
+     */
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
+        //请求URL
         String requestUrl = ((FilterInvocation) object).getRequestUrl();
         List<Menu> menus = menuService.getAllMenusWithRole();
         for (Menu menu : menus) {

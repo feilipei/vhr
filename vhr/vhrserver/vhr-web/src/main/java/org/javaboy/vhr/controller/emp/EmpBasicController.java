@@ -37,9 +37,20 @@ public class EmpBasicController {
     @Autowired
     DepartmentService departmentService;
 
+
+    /**
+     * @param page
+     * @param size
+     * @param employee       没有使用注解，最终的参数处理器为ServletModelAttributeMethodProcessor,
+     *                       主要是把HttpServletRequest请求中的表单参数封装到MutablePropertyValues实例
+     *                       中，再通过参数类型实例化(通过构造反射创建Employee实例)反射匹配属性进行值的填充
+     * @param beginDateScope 调用自定义DateConverter转换器实现字符串向Date的转换
+     * @return
+     */
     @GetMapping("/")
-    public RespPageBean getEmployeeByPage(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer size, Employee employee, Date[] beginDateScope) {
-        return employeeService.getEmployeeByPage(page, size, employee,beginDateScope);
+    public RespPageBean getEmployeeByPage(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue
+            = "10") Integer size, Employee employee, Date[] beginDateScope) {
+        return employeeService.getEmployeeByPage(page, size, employee, beginDateScope);
     }
 
     @PostMapping("/")
@@ -88,8 +99,8 @@ public class EmpBasicController {
 
     @GetMapping("/maxWorkID")
     public RespBean maxWorkID() {
-        RespBean respBean = RespBean.build().setStatus(200)
-                .setObj(String.format("%08d", employeeService.maxWorkID() + 1));
+        RespBean respBean = RespBean.build().setStatus(200).setObj(String.format("%08d",
+                employeeService.maxWorkID() + 1));
         return respBean;
     }
 
@@ -100,13 +111,20 @@ public class EmpBasicController {
 
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportData() {
-        List<Employee> list = (List<Employee>) employeeService.getEmployeeByPage(null, null, new Employee(),null).getData();
+        List<Employee> list =
+                (List<Employee>) employeeService.getEmployeeByPage(null, null
+                        , new Employee(), null).getData();
         return POIUtils.employee2Excel(list);
     }
 
     @PostMapping("/import")
     public RespBean importData(MultipartFile file) throws IOException {
-        List<Employee> list = POIUtils.excel2Employee(file, nationService.getAllNations(), politicsstatusService.getAllPoliticsstatus(), departmentService.getAllDepartmentsWithOutChildren(), positionService.getAllPositions(), jobLevelService.getAllJobLevels());
+        List<Employee> list = POIUtils.excel2Employee(file,
+                nationService.getAllNations(),
+                politicsstatusService.getAllPoliticsstatus(),
+                departmentService.getAllDepartmentsWithOutChildren(),
+                positionService.getAllPositions(),
+                jobLevelService.getAllJobLevels());
         if (employeeService.addEmps(list) == list.size()) {
             return RespBean.ok("上传成功");
         }

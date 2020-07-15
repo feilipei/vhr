@@ -24,6 +24,7 @@ import java.util.Map;
  * @微信 a_java_boy
  * @GitHub https://github.com/lenve
  * @Gitee https://gitee.com/lenve
+ * 用户名和密码验证身份过滤器
  */
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Autowired
